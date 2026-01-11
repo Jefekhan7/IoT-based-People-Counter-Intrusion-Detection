@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>How the IDS Works</title>
+<style>
+body {
+  background:#020409;
+  color:#d7fdf0;
+  font-family: monospace;
+  padding:30px;
+  line-height:1.8;
+}
+h1, h2 {
+  color:#00ffd5;
+  text-align:center;
+}
+img {
+  max-width:100%;
+  border:3px solid #00ffd5;
+  border-radius:15px;
+  margin:30px auto;
+  display:block;
+  box-shadow: 0 0 20px rgba(0,255,213,0.3);
+  transition: transform 0.5s;
+}
+img:hover {
+  transform: scale(1.05);
+}
+.diagram {
+  text-align:center;
+  margin:40px 0;
+}
+ul {
+  margin-left:40px;
+  font-size:1.1em;
+}
+p {
+  font-size:1.1em;
+  max-width:900px;
+  margin:20px auto;
+}
+.intro {
+  font-size:1.3em;
+  text-align:center;
+  font-style:italic;
+  color:#a0ffd0;
+  animation: fadeIn 3s;
+}
+@keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+.section {
+  background:rgba(0,255,213,0.05);
+  padding:30px;
+  border-radius:15px;
+  margin:40px 0;
+  animation: slideUp 1s;
+}
+@keyframes slideUp {
+  from {transform:translateY(50px); opacity:0;}
+  to {transform:translateY(0); opacity:1;}
+}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>IoT Intrusion Detection & People Counter System</h1>
+  <p>A smart, secure way to count people entering/exiting a room and detect unauthorized access – explained simply!</p>
+</div>
+
+<div class="section">
+  <h2>Project Goal (Simple Explanation)</h2>
+  <p>This project creates an automatic door monitor that:</p>
+  <ul>
+    <li>Counts how many people are inside a room (like a shop, classroom, or office)</li>
+    <li>Knows if someone enters or exits</li>
+    <li>Acts like a security alarm: when "ARMED", any movement triggers a loud buzzer and red alert</li>
+    <li>When "DISARMED", it just quietly counts people (no alarm)</li>
+    <li>Keeps all data safe with encryption (like a secret code)</li>
+  </ul>
+  <p>Perfect for knowing room occupancy and protecting restricted areas!</p>
+</div>
+
+<div class="section">
+  <h2>1. Overall System – How Everything Connects</h2>
+  <div class="diagram">
+    <p>Sensors → ESP32 Microcontroller → WiFi → Server → Live Dashboard on your browser</p>
+
+<grok-card data-id="a36ac2" data-type="image_card"  data-arg-size="LARGE" ></grok-card>
+
+
+
+<grok-card data-id="4b0661" data-type="image_card"  data-arg-size="LARGE" ></grok-card>
+
+  </div>
+</div>
+
+<div class="section">
+  <h2>2. How People Counting Works</h2>
+  <p>Two invisible light beams (IR sensors) are placed close together at the door.</p>
+  <ul>
+    <li>If someone breaks Beam 1  → <strong>ENTRY</strong> (People +1)</li>
+    <li>If someone breaks Beam 2 <strong>EXIT</strong> (People -1)</li>
+    <li>The system only counts if the order is correct – this makes it accurate!</li>
+  </ul>
+  <div class="diagram">
+
+<grok-card data-id="88445c" data-type="image_card"  data-arg-size="LARGE" ></grok-card>
+
+
+
+<grok-card data-id="135784" data-type="image_card"  data-arg-size="LARGE" ></grok-card>
+
+
+
+<grok-card data-id="07371d" data-type="image_card"  data-arg-size="LARGE" ></grok-card>
+
+
+
+<grok-card data-id="1248b5" data-type="image_card"  data-arg-size="LARGE" ></grok-card>
+
+  </div>
+</div>
+
+<div class="section">
+  <h2>3. How Intrusion (Alarm) Works</h2>
+  <p>You control the alarm with buttons on the dashboard:</p>
+  <ul>
+    <li><strong>ARMED Mode</strong>: Any movement across the door (or staying too long in one beam) = <strong>INTRUSION!</strong><br>
+        → Loud buzzer sounds for 3-4 seconds<br>
+        → Big red flashing alert on screen<br>
+        → Intrusion counter increases</li>
+    <li><strong>DISARMED Mode</strong>: No alarm – just counts people normally (safe for public hours)</li>
+  </ul>
+  <div class="diagram">
+
+<grok-card data-id="421067" data-type="image_card"  data-arg-size="LARGE" ></grok-card>
+
+
+
+<grok-card data-id="5a7d64" data-type="image_card"  data-arg-size="LARGE" ></grok-card>
+
+  </div>
+</div>
+
+<div class="section">
+  <h2>4. Security – Keeping Data Safe</h2>
+  <p>Every message from the sensor is protected like bank data:</p>
+  <ul>
+    <li>Encrypted with AES-128 (turns data into secret code)</li>
+    <li>Checked for tampering (integrity verification)</li>
+    <li>Protected from replay attacks</li>
+  </ul>
+  <div class="diagram">
+
+<grok-card data-id="089986" data-type="image_card"  data-arg-size="LARGE" ></grok-card>
+
+
+
+<grok-card data-id="257b6a" data-type="image_card"  data-arg-size="LARGE" ></grok-card>
+
+
+
+<grok-card data-id="a22f64" data-type="image_card"  data-arg-size="LARGE" ></grok-card>
+
+  </div>
+</div>
+
+<div class="section">
+  <h2>5. Live Dashboard</h2>
+  <p>You see everything in real-time on any phone/computer:</p>
+  <ul>
+    <li>Current people inside</li>
+    <li>Total people entered today</li>
+    <li>Armed/Disarmed status</li>
+    <li>Live log of encrypted + decrypted events</li>
+    <li>Big red alert when intrusion happens</li>
+  </ul>
+</div>
+
+<p class="intro">This system is reliable, secure, and easy to understand – great for shops, labs, classrooms, or secure rooms!</p>
+
+</body>
+</html>

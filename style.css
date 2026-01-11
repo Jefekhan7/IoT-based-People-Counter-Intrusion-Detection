@@ -1,0 +1,105 @@
+/* Remove body scroll */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;      /* Disable scrolling */
+    background: #121212;
+    color: #eee;
+}
+
+/* Summary header fixed at top */
+#summary-header {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 10px 20px;
+    background: #1e1e2f;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+}
+
+.summary-card {
+    background: #222;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Dashboard container fills remaining space */
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 80px 20px 20px 20px;  /* leave space for header */
+    height: calc(100vh - 80px);
+    overflow: hidden;
+}
+
+/* Panels */
+.panel {
+    flex: 1 1 45%;
+    max-width: 600px;
+    background: rgba(30,30,50,0.95);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    overflow: hidden;
+}
+
+/* Decrypted JSON window */
+#decrypted-data pre {
+    background: #000;
+    color: #0f0;
+    padding: 10px;
+    border-radius: 5px;
+    height: 400px;
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Event feed table */
+#events-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#events-table th, #events-table td {
+    border: 1px solid #444;
+    padding: 5px;
+    text-align: center;
+}
+
+#events-table th { background: #1e1e2f; color: #0ff; }
+#events-table td { color: #fff; }
+
+/* Intrusion Alert */
+#intrusion-alert {
+    position: fixed;
+    top: 60px;   /* below header */
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(45deg, #ff4d4d, #ff0000);
+    color: white;
+    font-size: 1.8em;
+    font-weight: bold;
+    padding: 15px 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(255,0,0,0.7);
+    z-index: 101;
+    text-align: center;
+    animation: pulse 1.2s infinite;
+}
+
+.hidden { display: none; }
+
+@keyframes pulse {
+    0%,100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.05); }
+}

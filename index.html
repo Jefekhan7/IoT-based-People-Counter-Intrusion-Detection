@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>IoT SIEM Dashboard</title>
+
+<style>
+body {
+  background:#050b14;
+  color:#e0fff4;
+  font-family: monospace;
+  margin:0;
+}
+
+header {
+  background:#00ffd5;
+  color:#001;
+  padding:10px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.stats span {
+  margin-right:20px;
+  font-weight:bold;
+  font-size:1.1em;
+}
+
+button {
+  padding:8px 20px;
+  margin-left:10px;
+  cursor:pointer;
+  font-weight:bold;
+  border: 2px solid #001;
+}
+
+button.active {
+  background:#ff4d4d;
+  color:white;
+}
+
+.container {
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:15px;
+  padding:15px;
+  height: calc(100vh - 70px);
+}
+
+.panel {
+  background:#081826;
+  border-radius:10px;
+  padding:15px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+}
+
+.log-panel {
+  flex-direction:column-reverse;
+}
+
+pre {
+  margin:4px 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size:0.9em;
+}
+
+.intrusion {
+  color:#ff4d4d;
+  font-weight:bold;
+  animation: blink 1s infinite alternate;
+}
+
+@keyframes blink {
+  from { opacity:0.7; }
+  to { opacity:1; }
+}
+
+.summary-box {
+  text-align:center;
+  font-size:1.3em;
+}
+
+.summary-item {
+  margin:30px 0;
+}
+
+/* Intrusion Alert Banner */
+#alert {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ff0000;
+  color: white;
+  padding: 20px 40px;
+  font-size: 2em;
+  font-weight: bold;
+  border-radius: 15px;
+  box-shadow: 0 0 30px rgba(255,0,0,0.8);
+  z-index: 1000;
+  display: none;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.05); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+</style>
+</head>
+
+<body>
+
+<!-- INTRUSION ALERT BANNER -->
+<div id="alert">🚨 INTRUSION DETECTED! 🚨</div>
+
+<header>
+  <div class="stats">
+    👥 People Inside: <span id="people">0</span> |
+    🛡 System: <span id="armed">YES</span> |
+    🚨 Total Intrusions: <span id="intrusions">0</span>
+  </div>
+
+  <div>
+    <button id="armBtn" onclick="arm(true)">ARM</button>
+    <button id="disarmBtn" onclick="arm(false)">DISARM</button>
+    <a href="/how-it-works" style="margin-left:20px; color:#001; text-decoration:none;">How it works →</a>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Left: Live Log -->
+  <div class="panel log-panel" id="log">
+    <h3>Live Event Log (Real-time)</h3>
+  </div>
+
+  <!-- Right: Summary -->
+  <div class="panel summary-box">
+    <h3>System Summary</h3>
+    <div class="summary-item">👥 <strong>People Inside</strong><br><span id="people2" style="font-size:2em;">0</span></div>
+    <div class="summary-item">📈 <strong>Total Entered</strong><br><span id="totalEntered" style="font-size:1.8em;">0</span></div>
+    <div class="summary-item">🛡 <strong>Armed Status</strong><br><span id="armed2" style="font-size:1.5em;">YES</span></div>
+    <div class="summary-item">🚨 <strong>Total Intrusions</strong><br><span id="intrusions2" style="font-size:1.5em;">0</span></div>
+  </div>
+</div>
+
+<script>
+let lastIntrusionCount = 0;
+
+async function arm(state){
+  await fetch("/arm", {
+    method: "POST",
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({armed: state})
+  });
+}
+
+async function update(){
+  try {
+    const events = await fetch("/events").then(r => r.json());
+    const summary = await fetch("/summary").then(r => r.json());
+
+    // Update all stats
+    document.getElementById("people").textContent = summary.people;
+    document.getElementById("people2").textContent = summary.people;
+    document.getElementById("totalEntered").textContent = summary.total_entered;
+    document.getElementById("armed").textContent = summary.armed ? "YES" : "NO";
+    document.getElementById("armed2").textContent = summary.armed ? "YES" : "NO";
+    document.getElementById("intrusions").textContent = summary.intrusions;
+    document.getElementById("intrusions2").textContent = summary.intrusions;
+
+    // Update ARM/DISARM button highlight
+    document.getElementById("armBtn").classList.toggle("active", summary.armed);
+    document.getElementById("disarmBtn").classList.toggle("active", !summary.armed);
+
+    // Show intrusion alert if new intrusion
+    if (summary.intrusions > lastIntrusionCount) {
+      const alert = document.getElementById("alert");
+      alert.style.display = "block";
+      setTimeout(() => { alert.style.display = "none"; }, 8000);
+      lastIntrusionCount = summary.intrusions;
+    }
+
+    // Update live log
+    const log = document.getElementById("log");
+    log.innerHTML = "<h3>Live Event Log (Real-time)</h3>";
+
+    events.forEach(e => {
+      const line = document.createElement("pre");
+      if (e.intrusion) line.classList.add("intrusion");
+
+      line.innerHTML = `
+<b>${e.time}</b> | <b>${e.event}</b> | People: ${e.people} | Armed: ${e.armed ? "YES" : "NO"}
+Encrypted: ${e.encrypted}
+→ ${e.decrypted}
+      `.trim();
+      log.appendChild(line);
+    });
+
+  } catch (err) {
+    console.error("Update failed:", err);
+  }
+}
+
+setInterval(update, 1000);
+update();
+</script>
+
+</body>
+</html>
